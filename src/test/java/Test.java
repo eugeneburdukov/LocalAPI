@@ -7,6 +7,6 @@ public class Test {
     public void test1() {
         User user = new User(1, "eugene", "eugene@mail.com");
         System.out.println(user.getEmail());
-        Assert.assertEquals(user.getEmail(), "eugene");
+        Assert.assertEquals(user.getEmail(), "eugene@mail.com");
     }
 }
