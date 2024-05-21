@@ -1,18 +1,63 @@
 package org.eugeneb;
 
+import com.google.gson.Gson;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        try {
+            // API endpoint URL
+            String apiUrl = "http://localhost:3000/api/users/";
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+            // Create URL object
+            URL url = new URL(apiUrl);
+
+            // Open connection
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Set request method
+            connection.setRequestMethod("GET");
+
+            // Get response code
+            int responseCode = connection.getResponseCode();
+
+            // Check if request was successful
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // Read response data
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String inputLine;
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                // Parse JSON response using Gson library
+                Gson gson = new Gson();
+                User[] users = gson.fromJson(response.toString(), User[].class);
+
+                // Print user information
+                for (User user : users) {
+                    System.out.println("User ID: " + user.getId());
+                    System.out.println("User Name: " + user.getName());
+                    System.out.println("User Email: " + user.getEmail());
+                    System.out.println();
+                }
+            } else {
+                // Print error message if request was not successful
+                System.out.println("Failed to fetch user data. Response code: " + responseCode);
+            }
+
+            // Close connection
+            connection.disconnect();
+
+        } catch (Exception e) {
+            // Print exception if an error occurs
+            e.printStackTrace();
         }
     }
 }
